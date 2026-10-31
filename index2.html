@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>：英語関係代名詞 並び替えテスト</title>
-    <style>
+   <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5a623;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333333;
+            /* トリコロールカラーの定義 */
+            --tricolour-blue: #0033a0;   /* 深みのあるブルー */
+            --tricolour-red: #e4002b;    /* 鮮やかなレッド */
+            --tricolour-white: #ffffff;  /* クリーンなホワイト */
+            --bg-color: #f0f4f8;         /* 爽やかな淡い背景色 */
+            --text-color: #1a202c;       /* 視認性の高い文字色 */
+            --border-gray: #cbd5e1;
         }
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -22,47 +24,72 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 30px;
+            background-color: var(--tricolour-white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 51, 160, 0.1);
+            padding: 35px 30px;
             width: 100%;
             max-width: 600px;
             text-align: center;
             box-sizing: border-box;
+            border-top: 8px solid var(--tricolour-blue);
+            border-bottom: 8px solid var(--tricolour-red);
         }
         h1 {
-            color: var(--primary-color);
+            color: var(--tricolour-blue);
             font-size: 24px;
-            margin-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
         p.subtitle {
-            color: #666;
+            color: #64748b;
+            font-size: 15px;
             margin-bottom: 30px;
+            font-weight: 500;
         }
         .btn {
-            background-color: var(--primary-color);
+            background-color: var(--tricolour-blue);
             color: white;
             border: none;
             padding: 12px 24px;
             font-size: 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
-            margin: 5px;
+            transition: all 0.2s ease;
+            margin: 6px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 51, 160, 0.15);
         }
         .btn:hover {
-            background-color: #357abd;
+            background-color: #002266;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0, 51, 160, 0.2);
+        }
+        .btn:active {
+            transform: translateY(1px);
         }
         .btn-select {
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 2px solid var(--border-gray);
+            box-shadow: none;
+        }
+        .btn-select:hover {
+            background-color: #e2e8f0;
+            color: var(--tricolour-blue);
+            border-color: var(--tricolour-blue);
+            box-shadow: none;
         }
         .btn-select.active {
-            background-color: var(--secondary-color);
+            background-color: var(--tricolour-red);
             color: white;
+            border-color: var(--tricolour-red);
+            box-shadow: 0 4px 6px rgba(228, 0, 43, 0.2);
         }
         .screen {
             display: none;
@@ -75,49 +102,59 @@
             justify-content: space-between;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #555;
+            color: #475569;
+            font-size: 14px;
+            border-bottom: 2px dashed var(--border-gray);
+            padding-bottom: 10px;
         }
         .japanese {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: left;
-            line-height: 1.5;
-            background: #eef5fc;
-            padding: 15px;
-            border-left: 5px solid var(--primary-color);
-            border-radius: 4px;
+            line-height: 1.6;
+            background: #f8fafc;
+            padding: 18px;
+            border-left: 6px solid var(--tricolour-blue);
+            border-radius: 0 8px 8px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
         }
         .word-pool {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 25px;
-            min-height: 50px;
-            padding: 10px;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            background-color: #fafafa;
+            margin-bottom: 30px;
+            min-height: 55px;
+            padding: 12px;
+            border: 2px dashed var(--border-gray);
+            border-radius: 10px;
+            background-color: #f8fafc;
         }
         .word-card {
-            background-color: white;
-            border: 2px solid #ddd;
+            background-color: var(--tricolour-white);
+            border: 2px solid var(--border-gray);
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 24px;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
             font-size: 16px;
+            font-weight: 600;
+            transition: all 0.15s ease;
         }
         .word-card:hover {
-            border-color: var(--primary-color);
-            background-color: #f0f7ff;
+            border-color: var(--tricolour-blue);
+            background-color: #f0v5ff;
+            color: var(--tricolour-blue);
+            transform: scale(1.03);
         }
         .word-card.selected {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: default;
             pointer-events: none;
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
         }
         .answer-area {
             display: flex;
@@ -125,26 +162,44 @@
             justify-content: center;
             gap: 10px;
             margin-bottom: 25px;
-            min-height: 50px;
-            padding: 10px;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            background-color: #fff;
+            min-height: 55px;
+            padding: 12px;
+            border: 2px solid var(--tricolour-blue);
+            border-radius: 10px;
+            background-color: var(--tricolour-white);
+            box-shadow: inset 0 2px 4px rgba(0, 33, 160, 0.03);
+        }
+        .answer-area .word-card {
+            border-color: var(--tricolour-blue);
+            background-color: #f0f4ff;
+        }
+        .answer-area .word-card:hover {
+            border-color: var(--tricolour-red);
+            background-color: #fff5f5;
+            color: var(--tricolour-red);
         }
         .result-text {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 25px 0;
+            color: var(--tricolour-blue);
         }
         .score-details {
             font-size: 18px;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            margin-bottom: 35px;
+            line-height: 1.8;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-gray);
+        }
+        .score-details strong {
+            color: var(--tricolour-red);
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div id="start-screen" class="screen active">
         <h1>原さんからの挑戦状ト</h1>
