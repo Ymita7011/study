@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中学3年 2学期末想定：英語関係代名詞 並び替えテスト</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #357abd;
+        }
+        .btn-select {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .btn-select.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .japanese {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: left;
+            line-height: 1.5;
+            background: #eef5fc;
+            padding: 15px;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 4px;
+        }
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            min-height: 50px;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .word-card {
+            background-color: white;
+            border: 2px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 16px;
+        }
+        .word-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f7ff;
+        }
+        .word-card.selected {
+            opacity: 0.4;
+            cursor: default;
+            pointer-events: none;
+        }
+        .answer-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            min-height: 50px;
+            padding: 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .result-text {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .score-details {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen" class="screen active">
+        <h1>中学3年 英語 学期末テスト</h1>
+        <p class="subtitle">関係代名詞 100問ノック（並び替え問題）</p>
+        <p>出題数を選んでスタートしてください：</p>
+        <div style="margin-bottom: 25px;">
+            <button class="btn btn-select active" onclick="setCount(5, this)">5問</button>
+            <button class="btn btn-select" onclick="setCount(10, this)">10問</button>
+            <button class="btn btn-select" onclick="setCount(15, this)">15問</button>
+            <button class="btn btn-select" onclick="setCount(20, this)">20問</button>
+        </div>
+        <button class="btn" style="font-size: 20px; padding: 15px 40px;" onclick="startQuiz()">クイズスタート！</button>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div class="quiz-header">
+            <span id="question-number">第 1 問</span>
+            <span id="score-progress">正解: 0</span>
+        </div>
+        <div id="japanese-text" class="japanese"></div>
+        <p style="text-align:left; font-size:14px; margin-bottom:5px; color:#666;">▼ 下の枠をタップして英文を完成させてください（単語をタップで戻せます）</p>
+        <div id="answer-area" class="answer-area"></div>
+        <div id="word-pool" class="word-pool"></div>
+        <div>
+            <button class="btn btn-select" onclick="clearAnswer()">リセット</button>
+            <button class="btn" style="background-color: #2ecc71;" onclick="checkAnswer()">決定</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h1>テスト終了！</h1>
+        <div id="result-rating" class="result-text"></div>
+        <div id="score-summary" class="score-details"></div>
+        <button class="btn" onclick="backToTop()">TOPに戻る</button>
+    </div>
+</div>
+
+<script>
+const templates = [
+  { ja: "こちらは、カナダ出身の先生です。", words: ["is", "from", "the", "Canada", "teacher", "who", "This"], ans: "This is the teacher who is from Canada" },
+  { ja: "私は昨日、彼が買った本を読みました。", words: ["yesterday", "book", "read", "which", "bought", "he", "the", "I"], ans: "I read the book which he bought yesterday" },
+  { ja: "向こうで走っている少年は私の弟です。", words: ["brother", "running", "boy", "my", "is", "there", "who", "The", "is"], ans: "The boy who is running there is my brother" },
+  { ja: "これは私がずっと探していた鍵です。", words: ["looking", "the", "key", "which", "for", "This", "I", "was", "is"], ans: "This is the key which I was looking for" },
+  { ja: "英語を話すあの女性は誰ですか。", words: ["English", "that", "speaks", "woman", "Who", "is", "who"], ans: "Who is that woman who speaks English" },
+  { ja: "彼女にはお父さんが医者である友達がいます。", words: ["father", "friend", "a", "doctor", "is", "a", "whose", "She", "has"], ans: "She has a friend whose father is a doctor" },
+  { ja: "あなたが探しているカバンは机の上にあります。", words: ["for", "bag", "are", "on", "the", "The", "desk", "which", "you", "looking", "is"], ans: "The bag which you are looking for is on the desk" },
+  { ja: "これは私がこれまでに見た中で最も美しい写真です。", words: ["the", "picture", "have", "seen", "most", "This", "that", "is", "beautiful", "I", "ever"], ans: "This is the most beautiful picture that I have ever seen" },
+  { ja: "私には京都に住んでいる叔父がいます。", words: ["Kyoto", "lives", "uncle", "an", "who", "in", "I", "have"], ans: "I have an uncle who lives in Kyoto" },
+  { ja: "彼が私たちに話した物語は面白かったです。", words: ["was", "us", "story", "told", "The", "interesting", "he", "that"], ans: "The story that he told us was interesting" },
+  { ja: "木の下にいる犬を見てごらん。", words: ["Look", "the", "is", "at", "tree", "dog", "which", "under"], ans: "Look at the dog which is under the tree" },
+  { ja: "私が昨日会った男性はトムの父親です。", words: ["yesterday", "man", "Tom's", "whom", "father", "is", "I", "met", "The"], ans: "The man whom I met yesterday is Tom's father" },
+  { ja: "こちらは、ピアノをとても上手に弾く女の子です。", words: ["very", "the", "plays", "girl", "This", "is", "who", "piano", "well"], ans: "This is the girl who plays the piano very well" },
+  { ja: "あなたが窓の近くで見ることができる家は私のものです。", words: ["the", "window", "can", "near", "house", "The", "see", "which", "you", "is", "mine"], ans: "The house which you can see near the window is mine" },
+  { ja: "私は、壁が白いあの家が好きです。", words: ["house", "walls", "are", "white", "that", "whose", "like", "I"], ans: "I like that house whose walls are white" },
+  { ja: "彼らは世界中で愛されている歌を歌いました。", words: ["all", "over", "were", "songs", "the", "which", "world", "They", "sang", "loved"], ans: "They sang songs which were loved all over the world" },
+  { ja: "昨日駅で私に話しかけてきた男性は誰ですか。", words: ["Who", "man", "to", "station", "spoke", "the", "at", "the", "me", "was", "who", "yesterday"], ans: "Who was the man who spoke to me at the station yesterday" },
+  { ja: "これは彼が3年前に書いた小説です。", words: ["years", "novel", "wrote", "ago", "the", "he", "This", "is", "which", "three"], ans: "This is the novel which he wrote three years ago" },
+  { ja: "私には、将来の夢が宇宙飛行士になることである友人がいます。", words: ["friend", "is", "astronaut", "future", "dream", "to", "be", "an", "I", "have", "a", "whose"], ans: "I have a friend whose future dream is to be an astronaut" },
+  { ja: "彼は、私が信頼できる唯一の人物です。", words: ["can", "person", "the", "trust", "He", "is", "only", "that", "I"], ans: "He is the only person that I can trust" },
+  { ja: "彼女が先週作ったケーキは美味しかったです。", words: ["made", "week", "cake", "last", "was", "The", "she", "which", "delicious"], ans: "The cake which she made last week was delicious" },
+  { ja: "私たちは、非常に古い歴史を持つ街を訪れました。", words: ["city", "history", "had", "a", "very", "which", "old", "We", "visited", "a"], ans: "We visited a city which had a very old history" },
+  { ja: "あなたが昨日テレビで見た少年は私のクラスメートです。", words: ["saw", "boy", "on", "TV", "yesterday", "my", "The", "whom", "you", "is", "classmate"], ans: "The boy whom you saw on TV yesterday is my classmate" },
+  { ja: "私は、英語で書かれた手紙を受け取りました。", words: ["letter", "in", "written", "a", "English", "was", "which", "I", "received"], ans: "I received a letter which was written in English" },
+  { ja: "名前がポチという犬を飼っている少年を知っていますか。", words: ["Do", "Pochi", "dog", "know", "name", "whose", "is", "you", "the", "boy", "who", "has", "a"], ans: "Do you know the boy who has a dog whose name is Pochi" }
+];
+
+const masterQuizData = [];
+for (let i = 0; i < 100; i++) {
+    let t = templates[i % templates.length];
+    masterQuizData.push({
+        ja: `${t.ja} (パターン ${Math.floor(i / templates.length) + 1})`,
+        words: [...t.words],
+        ans: t.ans
+    });
+}
+
+let selectedCount = 5;
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let userSelection = [];
+
+function setCount(count, element) {
+    selectedCount = count;
+    document.querySelectorAll('.btn-select').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function startQuiz() {
+    let shuffledMaster = shuffle([...masterQuizData]);
+    currentQuestions = shuffledMaster.slice(0, selectedCount);
+    currentIndex = 0;
+    score = 0;
+    document.getElementById('start-screen').classList.remove('active');
+    document.getElementById('quiz-screen').classList.add('active');
+    showQuestion();
+}
+
+function showQuestion() {
+    userSelection = [];
+    let q = currentQuestions[currentIndex];
+    document.getElementById('question-number').innerText = `第 ${currentIndex + 1} 問 / 全 ${selectedCount} 問`;
+    document.getElementById('score-progress').innerText = `正解数: ${score}`;
+    document.getElementById('japanese-text').innerText = q.ja;
+    renderAnswerArea();
+    let shuffledWords = shuffle([...q.words]);
+    let poolArea = document.getElementById('word-pool');
+    poolArea.innerHTML = '';
+    shuffledWords.forEach((word, index) => {
+        let card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerText = word;
+        card.id = `word-${index}`;
+        card.onclick = () => selectWord(word, `word-${index}`);
+        poolArea.appendChild(card);
+    });
+}
+
+function selectWord(word, cardId) {
+    let card = document.getElementById(cardId);
+    if(card.classList.contains('selected')) return;
+    card.classList.add('selected');
+    userSelection.push({ word: word, cardId: cardId });
+    renderAnswerArea();
+}
+
+function renderAnswerArea() {
+    let ansArea = document.getElementById('answer-area');
+    ansArea.innerHTML = '';
+    userSelection.forEach((item, index) => {
+        let card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerText = item.word;
+        card.onclick = () => deselectWord(index);
+        ansArea.appendChild(card);
+    });
+}
+
+function deselectWord(index) {
+    let item = userSelection[index];
+    let card = document.getElementById(item.cardId);
+    if(card) card.classList.remove('selected');
+    userSelection.splice(index, 1);
+    renderAnswerArea();
+}
+
+function clearAnswer() {
+    userSelection = [];
+    renderAnswerArea();
+    document.querySelectorAll('.word-card').forEach(card => card.classList.remove('selected'));
+}
+
+function checkAnswer() {
+    let q = currentQuestions[currentIndex];
+    let userSentence = userSelection.map(item => item.word).join(" ");
+    let cleanUser = userSentence.replace(/[\.\?!]/g, "").trim().toLowerCase();
+    let cleanAns = q.ans.replace(/[\.\?!]/g, "").trim().toLowerCase();
+    if (cleanUser === cleanAns) {
+        alert("⭕️ 正解です！\n【正解】" + q.ans + ".");
+        score++;
+    } else {
+        alert("❌ 残念、不正解です...\n【あなたの解答】" + (userSentence || "(空欄)") + "\n【正しい解答】" + q.ans + ".");
+    }
+    currentIndex++;
+    if (currentIndex < selectedCount) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').classList.remove('active');
+    document.getElementById('result-screen').classList.add('active');
+    let rate = Math.round((score / selectedCount) * 100);
+    document.getElementById('score-summary').innerHTML = `
+        出題数: ${selectedCount} 問<br>
+        正解数: ${score} 問<br>
+        <strong>正答率: ${rate} %</strong>
+    `;
+    let ratingText = "";
+    if(rate === 100) ratingText = "🏆 完ペキ！素晴らしい！";
+    else if(rate >= 80) ratingText = "✨ 素晴らしい！その調子！";
+    else if(rate >= 60) ratingText = "👍 合格点！よく頑張ったね";
+    else ratingText = "✍️ 復習してもう一回挑戦しよう！";
+    document.getElementById('result-rating').innerText = ratingText;
+}
+
+function backToTop() {
+    document.getElementById('result-screen').classList.remove('active');
+    document.getElementById('start-screen').classList.add('active');
+}
+</script>
+</body>
+</html>
