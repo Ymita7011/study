@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENさんからの挑戦状Ⅱ ～単語覚えま表～</title>
+    <style>
+        :root {
+            --tricolour-blue: #0033a0;
+            --tricolour-red: #e4002b;
+            --tricolour-white: #ffffff;
+            --bg-color: #f0f4f8;
+            --text-color: #1a202c;
+            --border-gray: #cbd5e1;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: var(--tricolour-white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 51, 160, 0.1);
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            box-sizing: border-box;
+            border-top: 8px solid var(--tricolour-blue);
+            border-bottom: 8px solid var(--tricolour-red);
+        }
+        h1 {
+            color: var(--tricolour-blue);
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        p.subtitle {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        .section-title {
+            font-weight: 600;
+            color: #475569;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: var(--tricolour-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 51, 160, 0.15);
+        }
+        .btn:hover {
+            background-color: #002266;
+            transform: translateY(-1px);
+        }
+        .btn-select {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 2px solid var(--border-gray);
+            box-shadow: none;
+        }
+        .btn-select:hover {
+            background-color: #e2e8f0;
+            border-color: var(--tricolour-blue);
+        }
+        .btn-select.active {
+            background-color: var(--tricolour-blue);
+            color: white;
+            border-color: var(--tricolour-blue);
+        }
+        .btn-mode.active {
+            background-color: var(--tricolour-red);
+            color: white;
+            border-color: var(--tricolour-red);
+            box-shadow: 0 4px 6px rgba(228, 0, 43, 0.2);
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #475569;
+            font-size: 14px;
+            border-bottom: 2px dashed var(--border-gray);
+            padding-bottom: 10px;
+        }
+        .question-card {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-left: 6px solid var(--tricolour-blue);
+            border-radius: 0 8px 8px 0;
+            word-break: break-word;
+        }
+        .answer-card {
+            display: none;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff5f5;
+            border-left: 6px solid var(--tricolour-red);
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+        .answer-card .pos {
+            font-size: 14px;
+            color: #64748b;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .action-group {
+            margin-top: 30px;
+        }
+        .self-judge {
+            display: none;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn-correct {
+            background-color: #2ecc71;
+            box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+        }
+        .btn-correct:hover { background-color: #27ae60; }
+        .btn-incorrect {
+            background-color: var(--tricolour-red);
+            box-shadow: 0 4px 6px rgba(228, 0, 43, 0.2);
+        }
+        .btn-incorrect:hover { background-color: #b3001e; }
+        
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .result-table th, .result-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-gray);
+        }
+        .result-table th {
+            background-color: #f8fafc;
+            color: #475569;
+        }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-success { background-color: #2ecc71; }
+        .badge-danger { background-color: var(--tricolour-red); }
+        
+        .scrollbox {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-screen" class="screen active">
+        <h1>GENさんからの挑戦状Ⅱ ～単語覚えま表～</h1>
+        <p class="subtitle">Lesson 4 〜 Lesson 6 「単語覚えま表」より</p>
+        
+        <div class="section-title">1. クイズモードを選択してみ</div>
+        <div class="btn-group">
+            <button class="btn btn-select btn-mode active" onclick="setMode('en2ja', this)">英語 → 日本語</button>
+            <button class="btn btn-select btn-mode" onclick="setMode('ja2en', this)">日本語 → 英語</button>
+        </div>
+
+        <div class="section-title">2. 出題数を選択してみ</div>
+        <div class="btn-group">
+            <button class="btn btn-select btn-count active" onclick="setCount(5, this)">5問</button>
+            <button class="btn btn-select btn-count" onclick="setCount(10, this)">10問</button>
+            <button class="btn btn-select btn-count" onclick="setCount(15, this)">15問</button>
+            <button class="btn btn-select btn-count" onclick="setCount(20, this)">20問</button>
+        </div>
+        
+        <button class="btn" style="font-size: 20px; padding: 15px 45px; background-color: var(--tricolour-red); box-shadow: 0 4px 10px rgba(228, 0, 43, 0.25); margin-top: 15px;" onclick="startQuiz()">テストスタート！</button>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div class="quiz-header">
+            <span id="question-number">第 1 問</span>
+            <span id="score-progress">合っていた: 0</span>
+        </div>
+        
+        <div class="section-title" id="quiz-mode-title" style="text-align: left; font-size: 14px;">問題：</div>
+        <div id="question-text" class="question-card">-</div>
+        
+        <button id="btn-show-answer" class="btn" style="background-color: var(--tricolour-blue); width: 100%; padding: 15px;" onclick="showAnswer()">答えを見る</button>
+        
+        <div id="answer-box" class="answer-card">
+            <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">正解：</div>
+            <div><span id="answer-text">-</span><span id="answer-pos" class="pos">名</span></div>
+        </div>
+        
+        <div class="action-group">
+            <div id="self-judge-box" class="self-judge">
+                <button class="btn btn-incorrect" onclick="submitJudge(false)">ノーケー？ ❌</button>
+                <button class="btn btn-correct" onclick="submitJudge(true)">オーケー？ ⭕️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h1>テスト結果</h1>
+        <div id="result-rating" style="font-size: 24px; font-weight: bold; margin: 20px 0; color: var(--tricolour-blue);"></div>
+        <div id="score-summary" style="font-size: 18px; margin-bottom: 20px; font-weight: 600;"></div>
+        
+        <div class="scrollbox">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>問題</th>
+                        <th>正解</th>
+                        <th>判定</th>
+                    </tr>
+                </thead>
+                <tbody id="result-tbody">
+                </tbody>
+            </table>
+        </div>
+        
+        <button class="btn" style="background-color: var(--tricolour-blue);" onclick="backToTop()">TOPに戻る</button>
+    </div>
+</div>
+
+<script>
+const wordMaster = [
+  { en: "visual", ja: "映像", pos: "名" },
+  { en: "bottom", ja: "いちばん下の所、下部", pos: "名" },
+  { en: "screen", ja: "画面、スクリーン", pos: "名" },
+  { en: "tone", ja: "調子、音色", pos: "名" },
+  { en: "concentrate", ja: "集中する", pos: "動" },
+  { en: "comfortable", ja: "快適な", pos: "形" },
+  { en: "personally", ja: "個人的には", pos: "副" },
+  { en: "bathroom", ja: "手洗い、トイレ", pos: "名" },
+  { en: "steam", ja: "蒸気", pos: "名" },
+  { en: "chime", ja: "（鐘が）鳴る", pos: "動" },
+  { en: "quarter", ja: "4分の1", pos: "名" },
+  { en: "totem", ja: "トーテム", pos: "名" },
+  { en: "pole", ja: "棒、柱", pos: "名" },
+  { en: "totem pole", ja: "トーテムポール", pos: "名" },
+  { en: "pale", ja: "（顔色が）悪い、青ざめた", pos: "形" },
+  { en: "extra", ja: "余分の", pos: "形" },
+  { en: "shade", ja: "日陰", pos: "名" },
+  { en: "translate", ja: "翻訳する", pos: "動" },
+  { en: "translation", ja: "翻訳", pos: "名" },
+  { en: "unique", ja: "独特な", pos: "形" },
+  { en: "phrase", ja: "言い回し、表現", pos: "名" },
+  { en: "What about ...?", ja: "…はどうですか。", pos: "連" },
+  { en: "exact", ja: "正確な", pos: "形" },
+  { en: "replace", ja: "取りかえる", pos: "動" },
+  { en: "architect", ja: "建築家", pos: "名" },
+  { en: "translator", ja: "翻訳者", pos: "名" },
+  { en: "deal (deal with...)", ja: "対処する（...に対処する）", pos: "動" },
+  { en: "Nodame Cantabile", ja: "のだめカンタービレ", pos: "名" },
+  { en: "reader", ja: "読者", pos: "名" },
+  { en: "unfamiliar", ja: "よく知らない", pos: "形" },
+  { en: "explanation", ja: "説明", pos: "名" },
+  { en: "costume", ja: "衣装", pos: "名" },
+  { en: "sleeve", ja: "そで", pos: "名" },
+  { en: "strip", ja: "コマ漫画", pos: "名" },
+  { en: "able", ja: "…することができる", pos: "形" },
+  { en: "be able to ...", ja: "…することができる", pos: "連" },
+  { en: "someone", ja: "だれか", pos: "代" },
+  { en: "contact", ja: "連絡をとる", pos: "動" },
+  { en: "below", ja: "下（の方）に〔の〕", pos: "副" },
+  { en: "tonight", ja: "今夜（は）", pos: "副" },
+  { en: "addiction", ja: "中毒", pos: "名" },
+  { en: "apparent", ja: "明らかな", pos: "形" },
+  { en: "behavior", ja: "ふるまい、態度", pos: "名" },
+  { en: "dependence", ja: "依存", pos: "名" },
+  { en: "interaction", ja: "交流", pos: "名" },
+  { en: "face-to-face", ja: "対面して", pos: "副" },
+  { en: "device", ja: "装置", pos: "名" },
+  { en: "dad", ja: "（お）父さん", pos: "名" },
+  { en: "promise", ja: "約束する", pos: "動" },
+  { en: "fair", ja: "公平な", pos: "形" },
+  { en: "ladle", ja: "おたま", pos: "名" },
+  { en: "flea", ja: "ノミ", pos: "名" },
+  { en: "flea market", ja: "ノミの市、フリーマーケット", pos: "名" },
+  { en: "cutlet", ja: "カツレツ", pos: "名" },
+  { en: "left-handed", ja: "左ききの", pos: "形" },
+  { en: "right-handed", ja: "右ききの", pos: "形" },
+  { en: "struggle", ja: "たたかう", pos: "動" },
+  { en: "I mean", ja: "つまりその", pos: "連" },
+  { en: "left-handedness", ja: "左きき", pos: "名" },
+  { en: "aware", ja: "気づいて", pos: "形" },
+  { en: "be aware of ...", ja: "…に気づいている", pos: "連" },
+  { en: "meat", ja: "肉", pos: "名" },
+  { en: "What else ...?", ja: "ほかに何かありますか。", pos: "連" },
+  { en: "allergy", ja: "アレルギー", pos: "名" },
+  { en: "egg-free", ja: "卵の入っていない", pos: "形" },
+  { en: "fairness", ja: "公平", pos: "名" },
+  { en: "treat", ja: "扱う", pos: "動" },
+  { en: "equally", ja: "平等に", pos: "副" },
+  { en: "resource", ja: "資源", pos: "名" },
+  { en: "distribute", ja: "分配する", pos: "動" },
+  { en: "seem", ja: "…のように見える", pos: "動" },
+  { en: "unfair", ja: "不公平な", pos: "形" },
+  { en: "result", ja: "結果", pos: "名" },
+  { en: "middle", ja: "真ん中", pos: "名" },
+  { en: "recognize", ja: "認識する", pos: "動" },
+  { en: "achieve", ja: "手に入れる、得る", pos: "動" },
+  { en: "alarm", ja: "目覚まし時計", pos: "名" },
+  { en: "within", ja: "…以内に", pos: "前" },
+  { en: "hop", ja: "ぴょんととぶ", pos: "動" },
+  { en: "might", ja: "…かもしれない", pos: "助" },
+  { en: "apartment", ja: "アパート", pos: "名" },
+  { en: "otherwise", ja: "もしそうでなければ", pos: "副" },
+  { en: "annoying", ja: "うるさい", pos: "形" },
+  { en: "battery", ja: "電池、バッテリー", pos: "名" },
+  { en: "last", ja: "続く", pos: "動" },
+  { en: "although", ja: "…だけれども", pos: "接" },
+  { en: "backlight", ja: "バックライト", pos: "名" },
+  { en: "dark", ja: "暗やみ", pos: "名" },
+  { en: "bedroom", ja: "寝室", pos: "名" },
+  { en: "sale", ja: "販売", pos: "名" },
+  { en: "model", ja: "型", pos: "名" },
+  { en: "compact", ja: "小型の", pos: "形" },
+  { en: "function", ja: "機能", pos: "名" }
+];
+
+let quizMode = 'en2ja';
+let selectedCount = 5;
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let resultsHistory = [];
+
+function setMode(mode, element) {
+    quizMode = mode;
+    document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function setCount(count, element) {
+    selectedCount = count;
+    document.querySelectorAll('.btn-count').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function startQuiz() {
+    let shuffled = shuffle([...wordMaster]);
+    currentQuestions = shuffled.slice(0, selectedCount);
+    currentIndex = 0;
+    score = 0;
+    resultsHistory = [];
+    
+    document.getElementById('start-screen').classList.remove('active');
+    document.getElementById('quiz-screen').classList.add('active');
+    showQuestion();
+}
+
+function showQuestion() {
+    let q = currentQuestions[currentIndex];
+    document.getElementById('question-number').innerText = `第 ${currentIndex + 1} 問 / 全 ${selectedCount} 問`;
+    document.getElementById('score-progress').innerText = `合っていた数: ${score}`;
+    
+    document.getElementById('answer-box').style.display = 'none';
+    document.getElementById('self-judge-box').style.display = 'none';
+    document.getElementById('btn-show-answer').style.display = 'block';
+    
+    if (quizMode === 'en2ja') {
+        document.getElementById('quiz-mode-title').innerText = '問題（この単語の意味は？）：';
+        document.getElementById('question-text').innerText = q.en;
+        document.getElementById('answer-text').innerText = q.ja;
+    } else {
+        document.getElementById('quiz-mode-title').innerText = '問題（この意味になる単語は？）：';
+        document.getElementById('question-text').innerText = q.ja;
+        document.getElementById('answer-text').innerText = q.en;
+    }
+    document.getElementById('answer-pos').innerText = q.pos;
+}
+
+function showAnswer() {
+    document.getElementById('btn-show-answer').style.display = 'none';
+    document.getElementById('answer-box').style.display = 'block';
+    document.getElementById('self-judge-box').style.display = 'flex';
+}
+
+function submitJudge(isCorrect) {
+    let q = currentQuestions[currentIndex];
+    if (isCorrect) score++;
+    
+    resultsHistory.push({
+        question: quizMode === 'en2ja' ? q.en : q.ja,
+        answer: (quizMode === 'en2ja' ? q.ja : q.en) + ` (${q.pos})`,
+        isCorrect: isCorrect
+    });
+    
+    currentIndex++;
+    if (currentIndex < selectedCount) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').classList.remove('active');
+    document.getElementById('result-screen').classList.add('active');
+    
+    let rate = Math.round((score / selectedCount) * 100);
+    document.getElementById('score-summary').innerHTML = `
+        出題数: ${selectedCount} 問<br>
+        合っていた数: ${score} 問<br>
+        <strong>正答率: ${rate} %</strong>
+    `;
+    
+    let ratingText = "";
+    if(rate === 100) ratingText = "🏆  完ペキ！テリレリ！";
+    else if(rate >= 80) ratingText = "✨ 素晴らしい！ヘーホーフーン！";
+    else if(rate >= 60) ratingText = "👍 ぶぅ～い";
+    else ratingText = "✍ " + " ノーケー。。あっかんわ～";
+    
+    document.getElementById('result-rating').innerText = ratingText;
+    
+    let tbody = document.getElementById('result-tbody');
+    tbody.innerHTML = '';
+    
+    resultsHistory.forEach(item => {
+        let row = document.createElement('tr');
+        let tdQ = document.createElement('td');
+        tdQ.innerText = item.question;
+        let tdA = document.createElement('td');
+        tdA.innerText = item.answer;
+        let tdJ = document.createElement('td');
+        let badge = document.createElement('span');
+        badge.className = item.isCorrect ? 'badge badge-success' : 'badge badge-danger';
+        badge.innerText = item.isCorrect ? '⭕' : '❌';
+        tdJ.appendChild(badge);
+        
+        row.appendChild(tdQ);
+        row.appendChild(tdA);
+        row.appendChild(tdJ);
+        tbody.appendChild(row);
+    });
+}
+
+function backToTop() {
+    document.getElementById('result-screen').classList.remove('active');
+    document.getElementById('start-screen').classList.add('active');
+}
+</script>
+</body>
+</html>
